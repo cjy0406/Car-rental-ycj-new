@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+.hero {
+    background: linear-gradient(rgba(255,56,92,0.7), rgba(34,34,34,0.7)), url('https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+    color: #fff;
+    border-radius: 2rem;
+    padding: 4rem 2rem 3rem 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+}
+.feature-card {
+    border-radius: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    background: #fff;
+    border: none;
+    transition: transform 0.15s;
+}
+.feature-card:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 6px 24px rgba(255,56,92,0.10);
+}
+.testimonial {
+    background: #fff;
+    border-radius: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+</style>
+<div class="hero text-center mb-5">
+  <h1 class="display-4 fw-bold mb-3">Find Your Perfect Ride</h1>
+  <p class="lead mb-4">Book unique cars from trusted local vendors. Easy, secure, and flexible—just like home sharing, but for cars.</p>
+  <a href="/cars/" class="btn btn-lg btn-light px-4 me-2 fw-bold" style="color:#ff385c;">Browse Cars</a>
+  <a href="/register/vendor/" class="btn btn-lg btn-outline-light px-4 fw-bold">Become a Vendor</a>
+</div>
+<div class="row g-4 justify-content-center mb-5">
+  <div class="col-md-4">
+    <div class="card feature-card p-4 h-100 text-center">
+      <div class="mb-3" style="font-size:2.5rem;color:#ff385c;"><i class="bi bi-car-front-fill"></i></div>
+      <h5 class="fw-bold">Wide Selection</h5>
+      <p>Choose from sedans, SUVs, convertibles, and more—perfect for any trip or occasion.</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card feature-card p-4 h-100 text-center">
+      <div class="mb-3" style="font-size:2.5rem;color:#ff385c;"><i class="bi bi-shield-lock-fill"></i></div>
+      <h5 class="fw-bold">Safe & Secure</h5>
+      <p>All vendors are verified. Your bookings are protected and your data is secure.</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card feature-card p-4 h-100 text-center">
+      <div class="mb-3" style="font-size:2.5rem;color:#ff385c;"><i class="bi bi-chat-dots-fill"></i></div>
+      <h5 class="fw-bold">24/7 Support</h5>
+      <p>Our AI assistant and support team are always here to help you find the right car.</p>
+    </div>
+  </div>
+</div>
+<div class="row justify-content-center mb-5">
+  <div class="col-md-10">
+    <h3 class="fw-bold text-center mb-4" style="color:#ff385c;">What Our Users Say</h3>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="testimonial text-center">
+          <div class="mb-2"><i class="bi bi-emoji-smile" style="font-size:2rem;color:#ff385c;"></i></div>
+          <blockquote class="blockquote">“Booking a car was as easy as booking a home on Airbnb. Loved the experience!”</blockquote>
+          <figcaption class="blockquote-footer">Sarah, Customer</figcaption>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testimonial text-center">
+          <div class="mb-2"><i class="bi bi-emoji-sunglasses" style="font-size:2rem;color:#ff385c;"></i></div>
+          <blockquote class="blockquote">“I listed my car and got my first booking in a day. The dashboard is super easy!”</blockquote>
+          <figcaption class="blockquote-footer">Mike, Vendor</figcaption>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testimonial text-center">
+          <div class="mb-2"><i class="bi bi-robot" style="font-size:2rem;color:#ff385c;"></i></div>
+          <blockquote class="blockquote">“The AI assistant helped me pick the perfect car for my road trip.”</blockquote>
+          <figcaption class="blockquote-footer">Alex, Customer</figcaption>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="text-center mb-5">
+  <h4 class="fw-bold mb-3">Ready to get started?</h4>
+  <a href="/register/customer/" class="btn btn-lg btn-primary px-5 fw-bold" style="background:#ff385c;border:none;">Sign Up as Customer</a>
+  <a href="/register/vendor/" class="btn btn-lg btn-outline-primary px-5 fw-bold ms-2" style="border-color:#ff385c;color:#ff385c;">List Your Car</a>
+</div>
+{% endblock %} 

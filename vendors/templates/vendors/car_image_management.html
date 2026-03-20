@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+.drop-area {
+  border: 2px dashed #ff385c;
+  border-radius: 1rem;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #ff385c;
+  background: #fff0f4;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: background 0.2s, border 0.2s;
+}
+.drop-area.dragover {
+  background: #ffe3ec;
+  border-color: #d72660;
+}
+.img-draggable {
+  user-select: none;
+}
+.img-draggable.dragging {
+  opacity: 0.5;
+}
+.img-draggable.over {
+  border: 2px dashed #ff385c !important;
+}
+#previewArea {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.preview-thumb {
+  width: 100px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.progress {
+  height: 18px;
+  margin-bottom: 1rem;
+}
+</style>
+<div class="container py-3">
+  <h2 class="fw-bold mb-4" style="color:#ff385c;">Manage Images for {{ car.name }}</h2>
+  <a href="{% url 'vendor_dashboard' %}" class="btn btn-outline-secondary mb-3">&larr; Back to Dashboard</a>
+  <form method="post" enctype="multipart/form-data" id="uploadForm">
+    {% csrf_token %}
+    <div class="drop-area" id="dropArea">
+      <div class="mb-2"><i class="bi bi-cloud-arrow-up" style="font-size:2rem;"></i></div>
+      <div class="fw-bold">Drag & drop images here, or click to select</div>
+      <input type="file" name="image" id="imageInput" class="form-control d-none" accept="image/*" multiple required>
+    </div>
+    <div id="previewArea"></div>
+    <div class="progress d-none" id="uploadProgress">
+      <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" id="progressBar" role="progressbar" style="width: 0%">0%</div>
+    </div>
+    <button type="submit" name="upload" class="btn btn-primary fw-bold d-none" id="uploadBtn">Upload</button>
+  </form>
+  <form method="post" id="reorderForm">
+    {% csrf_token %}
+    <input type="hidden" name="reorder" value="1">
+    <input type="hidden" name="order" id="orderInput">
+    <div class="row g-4" id="gallery">
+      {% for img in images %}
+        <div class="col-6 col-md-4 col-lg-3 text-center img-draggable" draggable="true" data-id="{{ img.id }}">
+          <div class="card shadow-sm p-2">
+            <img src="{{ img.image.url }}" alt="Car image" class="img-fluid rounded mb-2" style="max-height:120px;object-fit:cover;">
+            <form method="post" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="img_id" value="{{ img.id }}">
+              <button type="submit" name="delete" class="btn btn-sm btn-outline-danger fw-bold">Delete</button>
+            </form>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12 text-center text-muted py-4">
+          <h5>No images uploaded yet.</h5>
+        </div>
+      {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-outline-primary mt-3 fw-bold">Save Order</button>
+  </form>
+</div>
+<script>
+const dropArea = document.getElementById('dropArea');
+const imageInput = document.getElementById('imageInput');
+const uploadForm = document.getElementById('uploadForm');
+const gallery = document.getElementById('gallery');
+const reorderForm = document.getElementById('reorderForm');
+const orderInput = document.getElementById('orderInput');
+const previewArea = document.getElementById('previewArea');
+const uploadProgress = document.getElementById('uploadProgress');
+const progressBar = document.getElementById('progressBar');
+const uploadBtn = document.getElementById('uploadBtn');
+
+// Preview selected images
+function showPreviews(files) {
+  previewArea.innerHTML = '';
+  Array.from(files).forEach(file => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.className = 'preview-thumb';
+        previewArea.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+// Drag-and-drop upload
+if (dropArea) {
+  dropArea.addEventListener('click', () => imageInput.click());
+  dropArea.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropArea.classList.add('dragover');
+  });
+  dropArea.addEventListener('dragleave', e => {
+    e.preventDefault();
+    dropArea.classList.remove('dragover');
+  });
+  dropArea.addEventListener('drop', e => {
+    e.preventDefault();
+    dropArea.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      imageInput.files = e.dataTransfer.files;
+      showPreviews(e.dataTransfer.files);
+      uploadBtn.classList.remove('d-none');
+    }
+  });
+}
+if (imageInput) {
+  imageInput.addEventListener('change', () => {
+    if (imageInput.files.length) {
+      showPreviews(imageInput.files);
+      uploadBtn.classList.remove('d-none');
+    } else {
+      previewArea.innerHTML = '';
+      uploadBtn.classList.add('d-none');
+    }
+  });
+}
+
+// Upload with progress
+uploadForm.addEventListener('submit', function(e) {
+  if (imageInput.files.length) {
+    e.preventDefault();
+    uploadProgress.classList.remove('d-none');
+    progressBar.style.width = '0%';
+    progressBar.textContent = '0%';
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', uploadForm.querySelector('[name=csrfmiddlewaretoken]').value);
+    formData.append('upload', '1');
+    for (let i = 0; i < imageInput.files.length; i++) {
+      formData.append('image', imageInput.files[i]);
+    }
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '', true);
+    xhr.upload.onprogress = function(e) {
+      if (e.lengthComputable) {
+        const percent = Math.round((e.loaded / e.total) * 100);
+        progressBar.style.width = percent + '%';
+        progressBar.textContent = percent + '%';
+      }
+    };
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        progressBar.style.width = '100%';
+        progressBar.textContent = '100%';
+        setTimeout(() => {
+          uploadProgress.classList.add('d-none');
+          previewArea.innerHTML = '';
+          uploadBtn.classList.add('d-none');
+          window.location.reload();
+        }, 500);
+      }
+    };
+    xhr.send(formData);
+  }
+});
+
+// Drag-and-drop reordering
+let dragSrc = null;
+if (gallery) {
+  gallery.querySelectorAll('.img-draggable').forEach(item => {
+    item.addEventListener('dragstart', function(e) {
+      dragSrc = this;
+      this.classList.add('dragging');
+    });
+    item.addEventListener('dragend', function(e) {
+      this.classList.remove('dragging');
+      gallery.querySelectorAll('.img-draggable').forEach(i => i.classList.remove('over'));
+    });
+    item.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      if (this !== dragSrc) this.classList.add('over');
+    });
+    item.addEventListener('dragleave', function(e) {
+      this.classList.remove('over');
+    });
+    item.addEventListener('drop', function(e) {
+      e.preventDefault();
+      if (this !== dragSrc) {
+        this.classList.remove('over');
+        gallery.insertBefore(dragSrc, this);
+      }
+    });
+  });
+}
+if (reorderForm) {
+  reorderForm.addEventListener('submit', function(e) {
+    const ids = Array.from(gallery.querySelectorAll('.img-draggable')).map(div => div.getAttribute('data-id'));
+    orderInput.value = ids.join(',');
+  });
+}
+</script>
+{% endblock %} 

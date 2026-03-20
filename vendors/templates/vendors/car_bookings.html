@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-3">
+  <h2 class="fw-bold mb-4" style="color:#ff385c;">Bookings for {{ car.name }}</h2>
+  <a href="{% url 'vendor_dashboard' %}" class="btn btn-outline-secondary mb-3">&larr; Back to Dashboard</a>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle bg-white rounded-4 overflow-hidden">
+      <thead class="table-light">
+        <tr>
+          <th>Customer</th>
+          <th>Dates</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for booking in bookings %}
+          <tr>
+            <td>{{ booking.customer.user.username }}</td>
+            <td>{{ booking.start_date }} &rarr; {{ booking.end_date }}</td>
+            <td><span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'pending' %}bg-warning text-dark{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">{{ booking.status|title }}</span></td>
+            <td>${{ booking.total_price }}</td>
+            <td>
+              {% if booking.status == 'pending' %}
+                <form method="post" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                  <button name="action" value="approve" class="btn btn-success btn-sm rounded-pill px-3 fw-bold">Approve</button>
+                  <button name="action" value="reject" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold">Reject</button>
+                </form>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-center text-muted">No bookings for this car yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %} 

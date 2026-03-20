@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-6">
+    <div class="card shadow-lg rounded-4 p-4 mt-4">
+      <h2 class="mb-4 text-center fw-bold" style="color:#ff385c;">Cancel Booking</h2>
+      <div class="alert alert-danger mb-4">
+        <strong>Warning:</strong> This action cannot be undone.<br>
+        Are you sure you want to cancel your booking for <b>{{ booking.car.name }}</b> from <b>{{ booking.start_date }}</b> to <b>{{ booking.end_date }}</b>?
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-between">
+          <a href="{% url 'customer_dashboard' %}" class="btn btn-secondary">Back</a>
+          <button type="submit" class="btn btn-danger fw-bold">Cancel Booking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} 

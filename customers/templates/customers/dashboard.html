@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-3">
+  <h2 class="fw-bold mb-4" style="color:#ff385c;">My Bookings</h2>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle bg-white rounded-4 overflow-hidden">
+      <thead class="table-light">
+        <tr>
+          <th>Car</th>
+          <th>Vendor</th>
+          <th>Dates</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for booking in bookings %}
+          <tr>
+            <td>{{ booking.car.name }}</td>
+            <td>{{ booking.car.vendor.name }}</td>
+            <td>{{ booking.start_date }} &rarr; {{ booking.end_date }}</td>
+            <td><span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'pending' %}bg-warning text-dark{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">{{ booking.status|title }}</span></td>
+            <td>${{ booking.total_price }}</td>
+            <td>
+              {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+                <a href="{% url 'booking_cancel' booking.id %}" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold">Cancel</a>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-center text-muted">You have no bookings yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %} 

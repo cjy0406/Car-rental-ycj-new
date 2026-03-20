@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load form_tags %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-7">
+    <div class="card shadow-lg rounded-4 p-4 mt-4">
+      <h2 class="mb-4 text-center fw-bold" style="color:#ff385c;">Add a New Car</h2>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field|add_class:'form-control form-control-lg rounded-3' }}
+            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+            {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-lg w-100 fw-bold" style="background:#ff385c;color:#fff;">Add Car</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} 
