@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from vendors.models import Vendor, Car, CarImage
+from vendors.models import Vendor, Car, CarImage, WithdrawalRequest
 from customers.models import Customer
-from booking.models import Booking
+from booking.models import Booking, ReturnRecord, Review
 from datetime import datetime
 
 User = get_user_model()
@@ -81,9 +81,9 @@ class BookingSerializer(serializers.ModelSerializer):
             'id', 'car', 'car_name',
             'customer', 'customer_name',
             'start_date', 'end_date', 'total_price',
-            'status', 'admin_status', 'created_at'
+            'status', 'admin_status', 'return_confirmed_at', 'return_notes', 'created_at'
         ]
-        read_only_fields = ['customer', 'total_price', 'status', 'admin_status', 'created_at']
+        read_only_fields = ['customer', 'total_price', 'status', 'admin_status', 'return_confirmed_at', 'return_notes', 'created_at']
 
     def validate(self, attrs):
         start_date = attrs.get('start_date')
@@ -91,3 +91,24 @@ class BookingSerializer(serializers.ModelSerializer):
         if start_date and end_date and start_date >= end_date:
             raise serializers.ValidationError("End date must be after start date.")
         return attrs
+
+
+class ReturnRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReturnRecord
+        fields = ['id', 'booking', 'confirmed_by', 'confirmed_at', 'condition_notes', 'created_at']
+        read_only_fields = ['confirmed_by', 'confirmed_at', 'created_at']
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'booking', 'customer', 'vendor', 'car', 'rating', 'comment', 'reply', 'replied_at', 'created_at']
+        read_only_fields = ['customer', 'vendor', 'car', 'reply', 'replied_at', 'created_at']
+
+
+class WithdrawalRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WithdrawalRequest
+        fields = ['id', 'vendor', 'amount', 'status', 'requested_at', 'processed_at', 'notes']
+        read_only_fields = ['vendor', 'status', 'requested_at', 'processed_at']
