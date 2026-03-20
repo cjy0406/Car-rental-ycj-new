@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Vendor, Car, CarImage
+from .models import Vendor, Car, CarImage, WithdrawalRequest
 from django.utils.html import mark_safe
 
 @admin.register(Vendor)
@@ -37,3 +37,9 @@ class CarAdmin(admin.ModelAdmin):
             return mark_safe(f'<img src="{obj.image.url}" style="max-width: 300px; max-height: 200px; border-radius: 8px;" />')
         return "-"
     image_tag.short_description = 'Current Image'
+
+@admin.register(WithdrawalRequest)
+class WithdrawalRequestAdmin(admin.ModelAdmin):
+    list_display = ('vendor', 'amount', 'status', 'requested_at', 'processed_at')
+    search_fields = ('vendor__name',)
+    list_filter = ('status', 'requested_at', 'processed_at')
