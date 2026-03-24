@@ -38,12 +38,20 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=100)),
                 ('description', models.TextField(blank=True)),
                 ('image', models.ImageField(blank=True, null=True, upload_to=vendors.models.car_image_upload_to)),
-                ('car_type', models.CharField(choices=[('sedan', '轿车'), ('suv', 'SUV'), ('hatchback', '掀背车'), ('convertible', '敞篷车'), ('van', '厢式车'), ('truck', '卡车'), ('other', '其他')], max_length=20)),
+                ('car_type', models.CharField(choices=[
+                ('sedan', '轿车'),
+                ('suv', 'SUV'),
+                ('hatchback', '掀背车'),
+                ('convertible', '敞篷车'),
+                ('van', '厢式车'),
+                ('truck', '卡车'),
+                ('other', '其他')
+                    ], max_length=20)),
                 ('model_year', models.PositiveIntegerField()),
                 ('price_per_day', models.DecimalField(decimal_places=2, max_digits=8)),
                 ('is_available', models.BooleanField(default=True)),
                 ('is_approved', models.BooleanField(default=False)),
-                ('vendor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='cars', to='vendors.vendor')),\n            ],
+                ('vendor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='cars', to='vendors.vendor')),          ],
         ),
         migrations.CreateModel(
             name='CarImage',
@@ -54,7 +62,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('image', models.ImageField(upload_to=vendors.models.car_image_upload_to)),
                 ('order', models.PositiveIntegerField(default=0)),
-                ('car', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='vendors.car')),\n            ],
+                ('car', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='vendors.car')),           ],
             options={
                 'ordering': ['order', 'created_at'],
             },
@@ -71,6 +79,6 @@ class Migration(migrations.Migration):
                 ('requested_at', models.DateTimeField(auto_now_add=True)),
                 ('processed_at', models.DateTimeField(blank=True, null=True)),
                 ('notes', models.TextField(blank=True)),
-                ('vendor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='withdrawals', to='vendors.vendor')),\n            ],
+                ('vendor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='withdrawals', to='vendors.vendor')),        ],
         ),
     ]
